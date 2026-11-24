@@ -11,7 +11,7 @@ Full description:
 CENTINELLia is a focused field companion for cybersecurity and digital forensics professionals. Keep observations organized, follow response checklists, and work with practical analysis tools on your device.
 
 CASE WORKSPACE
-Create cases with priorities, categories, and statuses. Add timestamped observations and keep a clear record of what you observed and what still needs verification.
+Create cases with priorities, categories, and statuses. Add timestamped observations, evidence metadata, and events in a UTC chronology. Record sources, custodians, acquisition times, fingerprints, and verification states.
 
 RESPONSE GUIDES
 Work through written checklists for phishing, account compromise, malware triage, and data exposure. Save checklist progress to individual cases.
@@ -20,12 +20,15 @@ LOCAL ANALYSIS TOOLS
 Extract IPv4 addresses, domains, URLs, email addresses, and common hash formats from pasted text. Normalize common defanged indicators. Calculate SHA-256 for text or a file you select, then compare the result with an expected fingerprint.
 
 PORTABLE REPORTS
-Export case reports, indicator lists, and hash records. Back up your workspace as JSON and import new case records from a validated backup.
+Build reports containing observations, evidence, event chronology, and checklist progress. Review local counts and charts, export case-register CSV and case JSON, or print/save a report as PDF. Back up the workspace as JSON.
 
 ON-DEVICE WORKSPACE
-No account, ads, analytics, or app network connection in this release. Records stay in app-local storage unless you choose to export them. Exported files are readable text; protect sensitive records and retain backups you need.
+Core Android tools need no account and include no ads or analytics. Records stay in app-local storage unless you choose to export them. Exported files are readable text; protect sensitive records and retain backups you need.
 
-CENTINELLia supports analyst judgment. It does not detect malware, monitor devices, connect to an AI model, establish chain of custody, or provide an immutable evidence vault. Extracted patterns require human verification.
+OPTIONAL AI WORKSPACE
+The app can open an authorized private web workspace for AI consultation. It requires separate access and provider configuration, and does not automatically copy Android records. AI replies require human review.
+
+CENTINELLia supports analyst judgment. It does not detect malware, monitor devices, establish chain of custody, or provide an immutable evidence vault. Extracted patterns and AI responses require human verification.
 
 Published by Beacon of the Eagle LLC. Centinell Suite Defense is a project of Beacon of the Eagle LLC.
 Support: centinellsuite@gmail.com

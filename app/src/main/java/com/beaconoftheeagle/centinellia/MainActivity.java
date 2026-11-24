@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.print.PrintAttributes;
+import android.print.PrintManager;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
 import android.webkit.JavascriptInterface;
@@ -36,9 +38,9 @@ public final class MainActivity extends Activity {
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         web = new WebView(this);
-        web.setBackgroundColor(0xff0b1728);
+        web.setBackgroundColor(0xffedf7ff);
         FrameLayout frame = new FrameLayout(this);
-        frame.setBackgroundColor(0xff0b1728);
+        frame.setBackgroundColor(0xffedf7ff);
         frame.addView(web, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         setContentView(frame);
         if (android.os.Build.VERSION.SDK_INT >= 30) {
@@ -97,6 +99,19 @@ public final class MainActivity extends Activity {
         startActivityForResult(intent, code);
     }
     private final class DeviceBridge {
+        @JavascriptInterface public void openAssistant() {
+            runOnUiThread(() -> {
+                try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://centinellia-field-companion.centinellsuite.chatgpt.site/#assistant"))); }
+                catch (android.content.ActivityNotFoundException error) { failure("Install or enable a browser to open the secure AI workspace."); }
+            });
+        }
+        @JavascriptInterface public void printReport() {
+            runOnUiThread(() -> {
+                PrintManager manager = (PrintManager) getSystemService(PRINT_SERVICE);
+                if (manager != null) manager.print("CENTINELLia case report", web.createPrintDocumentAdapter("CENTINELLia"), new PrintAttributes.Builder().build());
+                else failure("Printing is unavailable on this device.");
+            });
+        }
         @JavascriptInterface public void hashFile() { runOnUiThread(() -> choose(HASH, "*/*")); }
         @JavascriptInterface public void importBackup() { runOnUiThread(() -> choose(IMPORT, "*/*")); }
         @JavascriptInterface public void exportText(String filename, String type, String content) {

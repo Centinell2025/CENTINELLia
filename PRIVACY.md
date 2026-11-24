@@ -1,25 +1,31 @@
 # CENTINELLia privacy policy
 
-Effective date: November 24, 2026. Publisher: Beacon of the Eagle LLC. Contact: centinellsuite@gmail.com.
+Effective November 24, 2026. Version 1.1.0. Publisher: Beacon of the Eagle LLC. Contact: centinellsuite@gmail.com.
 
-CENTINELLia 1.0.0 is an offline workspace for documenting cybersecurity investigations. It does not require an account. This release has no advertising, analytics, tracking SDK, AI service, or app network connection. The publisher does not receive your case records through this app.
+## Local investigation tools
 
-## Information stored on your device
+Cases, observations, evidence metadata, SHA-256 fingerprints you attach, event timelines, priorities, statuses, and checklist progress are stored locally in the Android app or the browser where you use the web workspace. The Android and web stores are separate. No automatic synchronization is provided. Core tools include no advertising or tracking SDK and do not upload case records.
 
-The app stores the case titles, categories, priorities, statuses, observations, timestamps, and response-checklist progress you enter in app-local WebView storage. Observations may contain sensitive information if you enter it. The app does not add a separate encryption layer to this storage and does not claim immutable records or a chain of custody. Android's application sandbox applies. Android backup is disabled for this app.
+Local records do not have an additional application encryption layer. The Android application sandbox applies. Android cloud backup and device transfer are excluded by the application configuration. Browser storage follows the browser's behavior. Export records you need before clearing storage, changing devices, or uninstalling.
 
-## Selected files
+## Selected files and exports
 
-When you choose a file for hashing, the app reads it to calculate SHA-256 on the device. It does not execute the file or upload it. The file itself is not copied into the workspace. The filename, byte count, and hash remain in the current session unless you choose to attach the result to a case or export it. You can also choose a JSON backup to import; imported cases are saved locally after validation. The Android document picker grants access only to selected documents and destinations.
+Hashing reads only the file you select, locally, without executing or uploading it. The original file is not copied into the evidence inventory. You can choose to attach its name and fingerprint to a case. Reports, JSON backups, CSV, and printed/PDF output are readable without a password. You choose their destination; a cloud document or print provider you choose may process the export under its own terms.
 
-## Exports and third-party document providers
+## Optional AI consultation
 
-You can export reports, indicators, hashes, and workspace backups. Exports are readable text or JSON, without password protection. You choose the destination. A document provider you choose, such as a cloud drive, may store the selected export or supply a selected source file under its own privacy terms. This app does not integrate an external document provider SDK or automatically send records to the publisher.
+AI is a separately configured feature of the private hosted web workspace. The Android app opens that workspace in a browser and does not copy its local case records there. The hosted workspace uses its platform's authorized sign-in and access policy.
 
-## Retention and deletion
+Only after you select Send question does the web workspace send your question through its authenticated server route to the configured OpenAI API. The selected case report is included only if you explicitly check the option to include it. Original files are never attached by this feature. The question is limited to 4,000 characters and selected case context to 12,000 characters.
 
-Records remain until you delete them in the app, clear app data in Android, or uninstall the app. Use Settings → Delete all local cases to remove workspace records. Exports remain wherever you saved them and must be removed separately. No server-side account exists to delete. Back up records you need before clearing or uninstalling the app.
+The app does not store an AI API credential in the HTML, JavaScript bundle, or local case storage. Credentials belong in the hosted runtime secret configuration. The server does not maintain a case database or intentionally log consultation bodies. The API request uses `store: false`; the AI provider and hosting platform may still process or retain technical data under their own applicable policies. No zero-retention guarantee is made by this app. Review the applicable provider terms before submitting sensitive records.
 
-## Audience and changes
+AI responses remain in the current session unless you choose to save one as an explicitly unverified case observation. AI output is not an established finding. When no provider is configured, the interface says that setup is required and does not generate a simulated response.
 
-This is a professional utility intended for adults working with authorized cybersecurity records, not an application designed for children. Contact the publisher with privacy questions. If future releases add an online or AI service, this policy and the in-app disclosures must be updated before that feature is enabled.
+## Deletion and retention
+
+Delete individual cases or all local records from Settings. Uninstalling or clearing Android app data removes the local workspace. Clearing the browser's site data removes the web workspace's local records. Exported files remain wherever you saved them and must be removed separately. Deleting local records does not delete a consultation already sent to an external provider; its terms and data controls apply. No server-side case account or synchronized case database is created by this version.
+
+## Audience and contact
+
+This professional utility is intended for adults handling authorized records. It is not designed for children. Contact centinellsuite@gmail.com with privacy questions.

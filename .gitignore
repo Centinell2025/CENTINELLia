@@ -6,5 +6,6 @@ local.properties
 keystore.properties
 node_modules/
 test-results/
+__pycache__/
 *.aab
 *.apk

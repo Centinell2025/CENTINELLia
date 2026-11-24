@@ -68,6 +68,12 @@ const fs = require('node:fs');
     await page.setViewportSize({width:1440,height:1000});await page.goto('http://127.0.0.1:4173/#overview');
     await page.screenshot({path:'docs/screenshots/desktop-overview.png',fullPage:true});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+    await page.goto('file://'+process.cwd()+'/preview/CENTINELLia_Preview.html');
+    await page.getByRole('heading',{name:'Clarity for every investigation.'}).waitFor();
+    await page.getByRole('button',{name:'New case',exact:false}).click();
+    await page.locator('#case-title').fill('Portable preview test');
+    await page.getByRole('button',{name:'Create case'}).click();
+    await page.getByRole('heading',{name:'Portable preview test',exact:true}).waitFor();
     assert.deepEqual(errors,[]);console.log('UI PASS: persistence, checklists, hashing, extraction, export, import, deletion, storage failure, mobile/desktop layout.');
     await browser.close();
   } catch(err) {await browser.close();throw err;}

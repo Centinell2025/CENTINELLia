@@ -34,6 +34,34 @@ jobs:
             app/build/outputs/bundle/release/app-release.aab
             app/build/reports/lint-results-debug.html
           retention-days: 14
+  android-smoke:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: CENTINELLia-1.0.0-android
+          path: android-build
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7
+          script: python3 tests/android-smoke.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CENTINELLia-android-device-check
+          path: test-results/android
+          retention-days: 14
   ui:
     runs-on: ubuntu-24.04
     timeout-minutes: 10

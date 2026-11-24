@@ -8,6 +8,7 @@ const fs = require('node:fs');
     const context=await browser.newContext({viewport:{width:412,height:915},deviceScaleFactor:1});
     const page=await context.newPage();const errors=[];page.on('pageerror',err=>errors.push(err.message));
     await page.goto('http://127.0.0.1:4173');
+    await page.getByRole('link',{name:'Enter Security Operations Center',exact:true}).click();
     await page.getByRole('button',{name:'New case',exact:false}).click();
     await page.locator('#case-title').fill('Training — suspicious sign-in review');
     await page.locator('#case-priority').selectOption('High');

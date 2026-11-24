@@ -1,6 +1,6 @@
-# CENTINELLia privacy policy
+# CENTINELL AI 1 privacy policy
 
-Effective November 24, 2026. Version 1.1.0. Publisher: Beacon of the Eagle LLC. Contact: centinellsuite@gmail.com.
+Effective November 24, 2026. Version 1.2.0. Publisher: Beacon of the Eagle LLC. Contact: centinellsuite@gmail.com.
 
 ## Local investigation tools
 
@@ -29,3 +29,6 @@ Delete individual cases or all local records from Settings. Uninstalling or clea
 ## Audience and contact
 
 This professional utility is intended for adults handling authorized records. It is not designed for children. Contact centinellsuite@gmail.com with privacy questions.
+
+## Infrastructure inventory
+Asset names, device classes, platforms, responsible teams, sites, manually recorded status and notes are saved in a separate local browser or application storage key. Inventory JSON exports are readable text. Deleting all cases does not delete inventory; remove inventory records individually or clear application/site data. The public web app may cache static application files for offline use, not API responses or case data. Do not include confidential information in public demonstrations.

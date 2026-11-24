@@ -1,7 +1,7 @@
 {
   "name": "centinellia",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
-  "description": "CENTINELLia offline DFIR Field Companion",
+  "description": "CENTINELL AI 1 enterprise pilot local defensive workspace",
   "scripts": { "test": "node --test tests/core.test.cjs tests/ai-worker.test.mjs", "preview": "python3 -m http.server 4173 --directory app/src/main/assets", "test:ui": "node tests/ui.test.cjs" }
 }

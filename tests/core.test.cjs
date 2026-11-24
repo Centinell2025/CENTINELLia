@@ -27,7 +27,7 @@ test('extracted hashes are bounded, typed and normalized', () => {
 test('malformed and duplicate backups cannot overwrite records', () => {
   const c=C.createCase('Training case','Medium','General investigation','');
   assert.throws(()=>C.validateBackup('not json'));
-  assert.throws(()=>C.validateBackup(JSON.stringify({format:'centinellia-backup',version:2,cases:[]})));
+  assert.throws(()=>C.validateBackup(JSON.stringify({format:'centinellia-backup',version:99,cases:[]})));
   assert.throws(()=>C.validateBackup(C.backup([c,c])));
   assert.throws(()=>C.validateBackup(C.backup([{...c,status:'Unknown'}])));
   assert.throws(()=>C.validateBackup(C.backup([{...c,notes:[{id:'n',at:'bad date',text:'x'}]}])));
@@ -39,4 +39,31 @@ test('backup import drops unexpected properties, and markup stays text when disp
   assert.equal(restored[0].unexpected,undefined);
   assert.equal({}.polluted,undefined);
   assert.equal(C.esc(restored[0].title),'&lt;img src=x onerror=alert(1)&gt;');
+});
+test('v1 backups migrate without losing observations and v2 preserves evidence and UTC chronology',()=>{
+  const c=C.createCase('Training migration','High','Account compromise','Legacy observation');
+  const old={...c};delete old.evidence;delete old.timeline;
+  const migrated=C.validateBackup(JSON.stringify({format:'centinellia-backup',version:1,cases:[old]}))[0];
+  assert.equal(migrated.notes[0].text,'Legacy observation');assert.deepEqual(migrated.evidence,[]);assert.deepEqual(migrated.timeline,[]);
+  c.evidence.push(C.createEvidence({label:'Training log',type:'Log',source:'Training source',custodian:'Training analyst',sha256:'a'.repeat(64),acquiredAt:'2026-11-24T14:30',notes:'Fictional metadata'}));
+  c.timeline.push(C.createEvent({title:'Later event',at:'2026-11-24T15:00',verification:'Observed',source:'Training source',details:'Later'}));
+  c.timeline.push(C.createEvent({title:'Earlier event',at:'2026-11-24T14:00',verification:'Unverified',source:'Training report',details:'Earlier'}));
+  const restored=C.validateBackup(C.backup([c]))[0];assert.deepEqual(restored.evidence,c.evidence);assert.deepEqual(restored.timeline,c.timeline);
+  const report=C.report(restored);assert.ok(report.includes('Acquired (UTC): 2026-11-24T14:30:00.000Z'));assert.ok(report.indexOf('Earlier event')<report.indexOf('Later event'));assert.ok(report.includes('Verification: Unverified'));
+  assert.equal(JSON.parse(C.backup([c])).version,2);
+});
+test('invalid dates, hashes and duplicate evidence IDs are rejected before import',()=>{
+  assert.throws(()=>C.utc('2026-02-31T12:00'));
+  assert.throws(()=>C.createEvidence({label:'Evidence',type:'File',sha256:'a'.repeat(65)}));
+  assert.throws(()=>C.createEvent({title:'Event',at:'',verification:'Confirmed'}));
+  const c=C.createCase('Training case','Medium','General investigation','');
+  const item=C.createEvidence({label:'Evidence',type:'File',sha256:''});c.evidence=[item,item];
+  assert.throws(()=>C.validateBackup(C.backup([c])));
+});
+test('CSV escapes spreadsheet formulas and operational metrics reflect actual records',()=>{
+  const c=C.createCase('=HYPERLINK("https://example.org")','Critical','General investigation','one observation');
+  c.evidence.push(C.createEvidence({label:'Training item',type:'Other',sha256:''}));
+  assert.ok(C.csv([c]).includes("'=HYPERLINK"));
+  const s=C.stats([c]);assert.equal(s.active,1);assert.equal(s.evidence,1);assert.equal(s.events,0);assert.equal(s.notes,1);assert.equal(s.priorities.find(p=>p.label==='Critical').count,1);
+  c.status='Closed';assert.equal(C.stats([c]).active,0);assert.equal(C.stats([c]).priorities.find(p=>p.label==='Critical').count,0);
 });

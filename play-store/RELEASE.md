@@ -1,7 +1,7 @@
 # Google Play release preparation
 
 Package: `com.beaconoftheeagle.centinellia`
-Version: 1.0.0 (1). Minimum Android 8.0; target Android 16 / API 36.
+Version: 1.1.0 (2). Minimum Android 8.0; target Android 16 / API 36.
 
 ## Build and sign
 
@@ -28,3 +28,6 @@ Version: 1.0.0 (1). Minimum Android 8.0; target Android 16 / API 36.
 Create a new Play Console app under Beacon of the Eagle LLC, configure its listing and declarations, and upload the signed AAB to an internal testing track first. Review pre-launch results, correct any issues, and then prepare a production release. This repository does not automatically upload or publish anything to Google Play. Google determines approval.
 
 API policy checked November 24, 2026: https://developer.android.com/google/play/requirements/target-sdk
+
+
+Version 1.1 adds evidence metadata, UTC chronology, reports/analytics, print/PDF, local text transformations, and an optional AI web workspace. Review the private AI audience, provider configuration, provider data processing, and app-access instructions before advertising AI to a general Play audience. Android core tools request no network permission; the AI browser workspace is a separate service. Backup format 2 imports legacy format 1, and older 1.0 apps cannot import format 2.

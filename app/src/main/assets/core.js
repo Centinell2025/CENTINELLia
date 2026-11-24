@@ -19,7 +19,30 @@
     if (!priorities.includes(priority) || !categories.includes(category)) throw Error('Invalid case details.');
     const now = new Date().toISOString();
     return { id: id(), title, priority, category, status: 'Open', createdAt: now, updatedAt: now,
-      notes: observation.trim() ? [{ id: id(), at: now, text: text(observation, 10000).trim() }] : [], checks: {} };
+      notes: observation.trim() ? [{ id: id(), at: now, text: text(observation, 10000).trim() }] : [], checks: {}, evidence: [], timeline: [] };
+  }
+  const evidenceTypes = ['File','Email','Log','Device','Image','Other'];
+  const verifications = ['Unverified','Observed','Confirmed'];
+  function utc(value) {
+    if (!value) return null;
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) throw Error('Enter a complete UTC date and time.');
+    const parsed = new Date(value+':00Z');
+    if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0,16)!==value) throw Error('Enter a valid UTC date and time.');
+    return parsed.toISOString();
+  }
+  function createEvidence(fields) {
+    const label=text(fields.label,120).trim(), sha256=text(fields.sha256,64).trim().toLowerCase();
+    if(!label) throw Error('Enter an evidence label.');
+    if(!evidenceTypes.includes(fields.type)) throw Error('Select an evidence type.');
+    if(fields.sha256 && !/^[a-f0-9]{64}$/i.test(fields.sha256.trim())) throw Error('Enter a complete 64-character SHA-256, or leave it empty.');
+    return {id:id(),label,type:fields.type,source:text(fields.source,300).trim(),custodian:text(fields.custodian,120).trim(),sha256,acquiredAt:utc(fields.acquiredAt),recordedAt:new Date().toISOString(),notes:text(fields.notes,3000).trim()};
+  }
+  function createEvent(fields) {
+    const title=text(fields.title,160).trim();
+    if(!title) throw Error('Enter an event title.');
+    if(!verifications.includes(fields.verification)) throw Error('Select a verification state.');
+    const at=utc(fields.at);if(!at) throw Error('Enter the event time in UTC.');
+    return {id:id(),title,at,recordedAt:new Date().toISOString(),verification:fields.verification,source:text(fields.source,300).trim(),details:text(fields.details,5000).trim()};
   }
   function extractIndicators(input) {
     const source = text(input, 100000).replace(/hxxps/gi, 'https').replace(/hxxp/gi, 'http').replace(/\[\.\]|\(\.\)/g, '.').replace(/\[:\]/g, ':');
@@ -41,7 +64,7 @@
     if (typeof raw !== 'string' || new TextEncoder().encode(raw).length > 2 * 1024 * 1024) throw Error('Backup exceeds 2 MB.');
     let data;
     try { data = JSON.parse(raw); } catch (_) { throw Error('This is not a valid JSON backup.'); }
-    if (data?.format !== 'centinellia-backup' || data.version !== 1 || !Array.isArray(data.cases) || data.cases.length > 300) throw Error('Unsupported CENTINELLia backup.');
+    if (data?.format !== 'centinellia-backup' || ![1,2].includes(data.version) || !Array.isArray(data.cases) || data.cases.length > 300) throw Error('Unsupported CENTINELLia backup.');
     const ids = new Set();
     return data.cases.map(c => {
       if (!c || typeof c.id !== 'string' || !/^[a-zA-Z0-9-]{1,100}$/.test(c.id) || ids.has(c.id) || typeof c.title !== 'string' || !c.title.trim() || c.title.length > 120 || !priorities.includes(c.priority) || !statuses.includes(c.status) || !categories.includes(c.category) || !timestamp(c.createdAt) || !timestamp(c.updatedAt) || !Array.isArray(c.notes) || c.notes.length > 500) throw Error('The backup contains an invalid case.');
@@ -52,14 +75,33 @@
       });
       const checks = {};
       for (const guide of guides) checks[guide.id] = guide.steps.map((_, i) => c.checks?.[guide.id]?.[i] === true);
-      return { id: c.id, title: c.title, priority: c.priority, category: c.category, status: c.status, createdAt: c.createdAt, updatedAt: c.updatedAt, notes, checks };
+      const evidence = c.evidence === undefined ? [] : c.evidence;
+      const timeline = c.timeline === undefined ? [] : c.timeline;
+      if(!Array.isArray(evidence)||evidence.length>200||!Array.isArray(timeline)||timeline.length>500) throw Error('The backup contains an invalid evidence register or timeline.');
+      const validId=value=>typeof value==='string'&&/^[a-zA-Z0-9-]{1,100}$/.test(value);
+      const evidenceIds=new Set(), eventIds=new Set();
+      const cleanEvidence=evidence.map(item=>{
+        if(!item||!validId(item.id)||evidenceIds.has(item.id)||typeof item.label!=='string'||!item.label.trim()||item.label.length>120||!evidenceTypes.includes(item.type)||typeof item.sha256!=='string'||(item.sha256!==''&&!/^[a-f0-9]{64}$/i.test(item.sha256))||!timestamp(item.recordedAt)||(item.acquiredAt!==null&&!timestamp(item.acquiredAt))||typeof item.notes!=='string'||item.notes.length>3000||typeof item.source!=='string'||item.source.length>300||typeof item.custodian!=='string'||item.custodian.length>120) throw Error('The backup contains invalid evidence metadata.');
+        evidenceIds.add(item.id);return {id:item.id,label:item.label,type:item.type,source:item.source,custodian:item.custodian,sha256:item.sha256.toLowerCase(),acquiredAt:item.acquiredAt,recordedAt:item.recordedAt,notes:item.notes};
+      });
+      const cleanTimeline=timeline.map(item=>{
+        if(!item||!validId(item.id)||eventIds.has(item.id)||typeof item.title!=='string'||!item.title.trim()||item.title.length>160||!timestamp(item.at)||!timestamp(item.recordedAt)||!verifications.includes(item.verification)||typeof item.source!=='string'||item.source.length>300||typeof item.details!=='string'||item.details.length>5000) throw Error('The backup contains an invalid timeline event.');
+        eventIds.add(item.id);return {id:item.id,title:item.title,at:item.at,recordedAt:item.recordedAt,verification:item.verification,source:item.source,details:item.details};
+      });
+      return { id: c.id, title: c.title, priority: c.priority, category: c.category, status: c.status, createdAt: c.createdAt, updatedAt: c.updatedAt, notes, checks, evidence:cleanEvidence, timeline:cleanTimeline };
     });
   }
-  function backup(cases) { return JSON.stringify({format:'centinellia-backup',version:1,exportedAt:new Date().toISOString(),cases}, null, 2); }
+  function backup(cases) { return JSON.stringify({format:'centinellia-backup',version:2,exportedAt:new Date().toISOString(),cases}, null, 2); }
   function report(c) {
     const lines = ['CENTINELLia — Case report', 'Beacon of the Eagle LLC', '', 'Case: ' + c.title, 'ID: ' + c.id, 'Priority: ' + c.priority, 'Status: ' + c.status, 'Category: ' + c.category, 'Opened (UTC): ' + c.createdAt, 'Updated (UTC): ' + c.updatedAt, '', 'OBSERVATIONS'];
     if (!c.notes.length) lines.push('No observations recorded.');
     c.notes.forEach(n => lines.push(n.at + '\n' + n.text + '\n'));
+    lines.push('', 'EVIDENCE INVENTORY');
+    if(!c.evidence?.length) lines.push('No evidence metadata recorded.');
+    (c.evidence||[]).forEach(item=>lines.push('Evidence: '+item.label+' ['+item.type+']','ID: '+item.id,'Source/location: '+(item.source||'Not recorded'),'Custodian: '+(item.custodian||'Not recorded'),'Acquired (UTC): '+(item.acquiredAt||'Not recorded'),'Recorded (UTC): '+item.recordedAt,'SHA-256: '+(item.sha256||'Not recorded'),item.notes,''));
+    lines.push('', 'EVENT TIMELINE');
+    if(!c.timeline?.length) lines.push('No timeline events recorded.');
+    [...(c.timeline||[])].sort((a,b)=>a.at.localeCompare(b.at)).forEach(item=>lines.push(item.at+' — '+item.title,'Verification: '+item.verification,'Source: '+(item.source||'Not recorded'),'Recorded (UTC): '+item.recordedAt,item.details,''));
     lines.push('', 'RESPONSE CHECKLISTS');
     for (const guide of guides) {
       if (c.checks?.[guide.id]?.some(Boolean)) {
@@ -70,7 +112,13 @@
     lines.push('', 'Analyst observations require verification. This workspace does not establish chain of custody, detect threats, or provide automated AI analysis.', 'Exported (UTC): ' + new Date().toISOString());
     return lines.join('\n');
   }
-  const api = { priorities, statuses, categories, guides, id, esc, createCase, extractIndicators, validateBackup, backup, report };
+  function csv(cases) {
+    const cell=value=>{let s=String(value??'');if(/^[\s]*[=+@-]/.test(s)||/^[\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';};
+    const rows=[['Case ID','Title','Priority','Status','Category','Observations','Evidence records','Timeline events','Updated UTC'],...cases.map(c=>[c.id,c.title,c.priority,c.status,c.category,c.notes.length,c.evidence?.length||0,c.timeline?.length||0,c.updatedAt])];
+    return rows.map(row=>row.map(cell).join(',')).join('\r\n');
+  }
+  function stats(cases) {return {total:cases.length,active:cases.filter(c=>c.status!=='Closed').length,evidence:cases.reduce((n,c)=>n+(c.evidence?.length||0),0),events:cases.reduce((n,c)=>n+(c.timeline?.length||0),0),notes:cases.reduce((n,c)=>n+c.notes.length,0),priorities:priorities.map(priority=>({label:priority,count:cases.filter(c=>c.priority===priority&&c.status!=='Closed').length})),statuses:statuses.map(status=>({label:status,count:cases.filter(c=>c.status===status).length}))};}
+  const api = { priorities, statuses, categories, guides, evidenceTypes, verifications, utc, id, esc, createCase, createEvidence, createEvent, extractIndicators, validateBackup, backup, report, csv, stats };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Centinell = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

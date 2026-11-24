@@ -1,4 +1,4 @@
-const CACHE='centinell-ai1-shell-v1';const SHELL=['./','./manifest.webmanifest','./icons/icon.svg','./pwa.js'];
+const CACHE='centinell-ai1-shell-v2';const SHELL=['./','./manifest.webmanifest','./icons/icon.svg','./pwa.js','./app/src/main/assets/app.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('centinell-ai1-shell-')&&k!==CACHE).map(k=>caches.delete(k))))));
 self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==self.location.origin)return;const base=new URL('./',self.location.href);if(!SHELL.some(p=>new URL(p,base).href===u.href))return;e.respondWith(fetch(e.request).catch(()=>caches.match(e.request).then(r=>r||Response.error())));});

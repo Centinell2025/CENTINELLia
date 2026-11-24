@@ -121,7 +121,7 @@
     return heading('WORKSPACE SETTINGS','Your data stays close.','Manage your records and understand how this version works.')+
       `<section class="panel"><h2>Backups &amp; portability</h2><p class="muted">Cases are saved in this app’s local storage. Uninstalling the app or clearing app data removes them. Exported files are readable text and may contain sensitive information.</p><div class="button-row"><button class="primary" data-action="backup">Export workspace JSON </button><button data-action="import">Import backup</button></div><p class="muted">Import adds new case IDs. Existing case IDs are kept as they are. Maximum backup size: 2 MB.</p></section>
       <section class="panel"><h2>Privacy at a glance</h2><ul class="privacy-list"><li>Core tools need no account and include no advertising or analytics. The hosted AI workspace requires its separate secure connection.</li><li>Case records, evidence metadata, and timelines stay in local storage. They are not separately encrypted by this app. AI context is sent only when explicitly selected for a consultation.</li><li>File hashing reads only the file you select and keeps the fingerprint in memory until you attach or export it. The source file is not copied into the workspace.</li><li>Exporting creates a file at a location you choose, which may be managed by a cloud storage provider.</li><li>Back up records before uninstalling, clearing storage, or changing devices.</li></ul></section>
-      <section class="panel"><h2>About CENTINELLia</h2><p class="muted">Version 1.1.0 · DFIR Field Companion<br>Beacon of the Eagle LLC · Centinell Suite Defense project</p><p class="muted">This release includes evidence metadata, event timelines, reports, and an optional AI consultation workspace. AI responses require a configured provider and human review. The app does not scan devices, detect malware, or establish a tamper-evident chain of custody.</p><p class="muted">Support: centinellsuite@gmail.com</p></section><section class="panel"><h2>Remove local records</h2><p class="muted">Deleting this workspace removes all saved cases from this app. Previously exported files are managed separately.</p><button class="danger" data-action="clear">Delete all local cases</button></section>`;
+      <section class="panel"><h2>About CENTINELL AI 1</h2><p class="muted">Version 1.2.0 · Enterprise pilot<br>Beacon of the Eagle LLC · Centinell Suite Defense project</p><p class="muted">This release includes evidence metadata, event timelines, reports, and an optional AI consultation workspace. AI responses require a configured provider and human review. The app does not scan devices, detect malware, or establish a tamper-evident chain of custody.</p><p class="muted">Support: centinellsuite@gmail.com</p></section><section class="panel"><h2>Remove local records</h2><p class="muted">Deleting this workspace removes all saved cases from this app. Previously exported files are managed separately.</p><button class="danger" data-action="clear">Delete all local cases</button></section>`;
   }
 
   const ASSET_KEY='centinellia.infrastructure.v1', assetTypes=['Android phone','iPhone / iPad','Workstation','Physical server','Virtual server','Cloud instance','Server cluster','Network appliance','Storage system'];
@@ -147,7 +147,7 @@
     $('breadcrumb').textContent = {overview:'Overview',cases:'Case register',case:'Case detail',tools:'Analysis tools',playbooks:'Response guides',guide:'Response guide',settings:'Settings',reports:'Reports & analytics',assistant:'AI assistant',workspace:'Workspace',infrastructure:'Infrastructure'}[view] || 'Overview';
     const content = view==='infrastructure'?infrastructure():view==='cases'?caseList():view==='case'?detail(parts[1],parts[2]):view==='tools'?tools(parts[1]):view==='playbooks'?playbooks():view==='guide'?guideView(parts[1],parts[2]):view==='settings'?settings():view==='reports'?reports():view==='assistant'?assistant():view==='workspace'?moreWorkspace():overview();
     $('main').innerHTML = (loadError ? '<div class="notice"><strong>Records could not be loaded.</strong> New saves are paused to protect the stored data. Open Settings to export the raw stored data or reset this workspace.</div>' : '') + content;
-    document.title = 'CENTINELLia · '+$('breadcrumb').textContent;
+    document.title = 'CENTINELL AI 1 · '+$('breadcrumb').textContent;
   }
   function filterCases() {
     const query = $('case-search').value.toLowerCase(), status = $('status-filter').value;
@@ -181,10 +181,10 @@
     else if(action==='asset-reset-filter'){assetFilter='';render();}
     else if(action==='asset-edit'){assetEdit=id;render();$('asset-name')?.focus();}
     else if(action==='asset-delete'){confirmAction('Remove asset?','This removes only the inventory record, not the device.',()=>{if(storeAssets(assets.filter(a=>a.id!==id))){assetEdit='';render();}});}
-    else if(action==='asset-export'){download('CENTINELLia-infrastructure.json','application/json',assetReadError?(localStorage.getItem(ASSET_KEY)||''):JSON.stringify({format:1,assets},null,2));}
+    else if(action==='asset-export'){download('CENTINELL-AI-1-infrastructure.json','application/json',assetReadError?(localStorage.getItem(ASSET_KEY)||''):JSON.stringify({format:1,assets},null,2));}
     else if(action==='new-case') { $('case-form').reset(); $('case-dialog').showModal(); $('case-title').focus(); }
     else if(action==='close-dialog') $('case-dialog').close();
-    else if(action==='export-case') { const c=cases.find(c=>c.id===id); if(c) download('CENTINELLia-case-'+shortId(c.id)+'.txt','text/plain',C.report(c)); }
+    else if(action==='export-case') { const c=cases.find(c=>c.id===id); if(c) download('CENTINELL-AI-1-case-'+shortId(c.id)+'.txt','text/plain',C.report(c)); }
     else if(action==='delete-case') confirmAction('Delete this case?','Its observations and checklist progress will be removed from this device. Export a report or backup first if you need to retain it.',()=>{if(persist(cases.filter(c=>c.id!==id))) {location.hash='#cases';render();toast('Case deleted.');}});
     else if(action==='open-guide') location.hash='#guide/'+id;
     else if(action==='tool-ioc') location.hash='#tools/ioc';
@@ -207,10 +207,10 @@
       const item=button.dataset.item,field=action==='remove-evidence'?'evidence':'timeline';
       confirmAction('Remove this record?','This removes the selected working record from this case. Export a report first if you need to keep it.',()=>{if(update(id,c=>{c[field]=c[field].filter(x=>x.id!==item);})){render();toast('Record removed.');}});
     }
-    else if(action==='export-register')download('CENTINELLia-case-register.csv','text/plain',C.csv(cases));
+    else if(action==='export-register')download('CENTINELL-AI-1-case-register.csv','text/plain',C.csv(cases));
     else if(action==='report-preview')showReport();
-    else if(action==='report-txt'){const c=showReport();if(c)download('CENTINELLia-case-'+shortId(c.id)+'.txt','text/plain',C.report(c));}
-    else if(action==='report-json'){const c=showReport();if(c)download('CENTINELLia-case-'+shortId(c.id)+'.json','application/json',C.backup([c]));}
+    else if(action==='report-txt'){const c=showReport();if(c)download('CENTINELL-AI-1-case-'+shortId(c.id)+'.txt','text/plain',C.report(c));}
+    else if(action==='report-json'){const c=showReport();if(c)download('CENTINELL-AI-1-case-'+shortId(c.id)+'.json','application/json',C.backup([c]));}
     else if(action==='print-report'){if(showReport()){if(window.CentinellDevice?.printReport)window.CentinellDevice.printReport();else window.print();}}
     else if(action==='text-transform'){
       textLabInput=$('text-lab-input').value;

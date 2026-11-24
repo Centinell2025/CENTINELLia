@@ -17,7 +17,9 @@ def tree():
 def find(label, timeout=40):
     end=time.time()+timeout
     while time.time()<end:
-        for node in tree().iter('node'):
+        nodes=list(tree().iter('node'))
+        nodes.sort(key=lambda node:0 if node.get('text','').lower()==label.lower() else 1)
+        for node in nodes:
             if label.lower() in (node.get('text','')+' '+node.get('content-desc','')).lower():
                 bounds=list(map(int,re.findall(r'\d+',node.get('bounds',''))))
                 if len(bounds)==4 and bounds[2]>bounds[0] and bounds[3]>bounds[1]:
@@ -41,7 +43,17 @@ try:
     # The system document picker is outside the app. Choose only our test fixture.
     try: tap('Show roots')
     except AssertionError: pass
-    tap('Downloads');tap('centinellia-fixture.txt')
+    tap('Downloads')
+    # Use list layout so tapping a full filename selects the document, rather
+    # than a thumbnail's separate preview action in the grid layout.
+    try: tap('List view')
+    except AssertionError: pass
+    screenshot('android-document-picker.png')
+    tap('centinellia-fixture.txt')
+    # Results can be below the fold on smaller Android viewports.
+    for _ in range(2):
+        adb('shell','input','swipe','500','1700','500','700','350')
+        time.sleep(1)
     find('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad')
     screenshot('android-file-hash.png')
     adb('shell','am','force-stop',PACKAGE)

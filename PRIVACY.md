@@ -32,3 +32,8 @@ This professional utility is intended for adults handling authorized records. It
 
 ## Infrastructure inventory
 Asset names, device classes, platforms, responsible teams, sites, manually recorded status and notes are saved in a separate local browser or application storage key. Inventory JSON exports are readable text. Deleting all cases does not delete inventory; remove inventory records individually or clear application/site data. The public web app may cache static application files for offline use, not API responses or case data. Do not include confidential information in public demonstrations.
+
+
+## Authorized security findings
+
+Assessment scope, authorization references, expiry dates, asset references, findings, severity, evidence references and remediation notes are stored locally in a separate workspace key. You may remove individual findings or clear app/site data. Exports are user-directed and readable without a password. Clearing cases alone does not erase these findings or the infrastructure inventory.

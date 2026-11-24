@@ -1,4 +1,4 @@
-# CENTINELLia · Sky Edition 1.1.0
+# CENTINELL AI 1 · Enterprise pilot 1.2.0
 
 **Beacon of the Eagle LLC · Centinell Suite Defense project**
 
@@ -22,7 +22,7 @@ The local storage key is preserved. Backup format 2 adds evidence and chronology
 
 ## Android
 
-Package: `com.beaconoftheeagle.centinellia`. Version 1.1.0 (version code 2). Android 8.0+; target/compile API 36.
+Package: `com.beaconoftheeagle.centinellia`. Version 1.2.0 (version code 3). Android 8.0+; target/compile API 36.
 
 Run `./gradlew lintDebug assembleDebug bundleRelease` or use the [Android build workflow](https://github.com/Centinell2025/CENTINELLia/actions). The workflow's release AAB is unsigned until signing is configured; owner-delivered signed packages and the upload key are handled separately. Never commit signing keys or credentials.
 
@@ -39,3 +39,6 @@ This is an analyst workspace. It does not scan devices, detect malware, or estab
 ![Sky-blue workspace with labeled training records](docs/screenshots/sky-overview.jpg)
 
 Support: centinellsuite@gmail.com. Copyright © 2026 Beacon of the Eagle LLC. All rights reserved.
+
+## Enterprise pilot distribution
+[Web workspace](https://centinell2025.github.io/CENTINELLia/) · [Market launch checklist](market/LAUNCH.md) · [Enterprise data foundation](enterprise/README.md). Centralized monitoring and live AI remain unverified. Existing package ID and local storage keys are retained.

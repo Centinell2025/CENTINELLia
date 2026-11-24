@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
+  <meta name="theme-color" content="#0b1728">
+  <title>CENTINELLia • DFIR Field Companion</title>
+  <link rel="stylesheet" href="app.css">
+  <script src="core.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="#overview"><span class="brand-mark">C<span>✦</span></span><span>CENTINELL<span class="mint">ia</span><small>BEACON OF THE EAGLE LLC</small></span></a>
+    <div class="workspace-label">FIELD WORKSPACE <span>01</span></div>
+    <nav aria-label="Main navigation">
+      <a href="#overview" data-view="overview"><span>◈</span> Overview</a>
+      <a href="#cases" data-view="cases"><span>▣</span> Case register</a>
+      <a href="#tools" data-view="tools"><span>⌘</span> Analysis tools</a>
+      <a href="#playbooks" data-view="playbooks"><span>≡</span> Response guides</a>
+      <a href="#settings" data-view="settings"><span>⚙</span> Workspace settings</a>
+    </nav>
+    <div class="sidebar-footer"><span class="status-dot"></span> Local workspace<br><small>Version 1.0 · Android edition</small></div>
+  </aside>
+  <div class="main-shell">
+    <header class="topbar"><span>SECURITY OPERATIONS <b>/</b> <span id="breadcrumb">Overview</span></span><span class="local-badge"><i></i> ON DEVICE</span></header>
+    <main id="main" tabindex="-1"></main>
+    <footer class="main-footer">BEACON OF THE EAGLE LLC <span>Observe. Document. Verify.</span></footer>
+  </div>
+</div>
+<dialog id="case-dialog" aria-labelledby="case-form-title">
+  <form id="case-form">
+    <div class="section-top"><h2 id="case-form-title">Open a case</h2><button type="button" data-action="close-dialog" class="icon-button" aria-label="Close">×</button></div>
+    <label>Case title<input id="case-title" maxlength="120" required placeholder="e.g. Suspicious sign-in review"></label>
+    <div class="form-grid"><label>Priority<select id="case-priority"><option>Low</option><option selected>Medium</option><option>High</option><option>Critical</option></select></label><label>Category<select id="case-category"><option>General investigation</option><option>Phishing</option><option>Account compromise</option><option>Malware triage</option><option>Data exposure</option></select></label></div>
+    <label>Initial observation<textarea id="case-observation" maxlength="10000" rows="4" placeholder="Record what you observed and where it came from."></textarea></label>
+    <p class="muted">Stored on this device. Keep a backup of records you need to retain.</p>
+    <button class="primary" type="submit">Create case <span>↗</span></button>
+  </form>
+</dialog>
+<dialog id="confirm-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title"></h2><p id="confirm-text"></p><div class="button-row"><button id="confirm-cancel">Cancel</button><button id="confirm-accept" class="danger">Confirm</button></div></dialog>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<input id="file-input" type="file" hidden>
+<input id="backup-input" type="file" accept=".json,application/json" hidden>
+</body>
+</html>

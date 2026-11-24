@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "CENTINELL AI 1 — Enterprise",
+  "short_name": "CENTINELL AI 1",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#edf7ff",
+  "theme_color": "#edf7ff",
+  "description": "Corporate cybersecurity and digital forensics workspace",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

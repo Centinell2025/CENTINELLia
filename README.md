@@ -1,10 +1,14 @@
-# CENTINELL AI 1 · Enterprise pilot 1.2.0
+# CENTINELL AI 1 · Enterprise pilot 1.2.1
 
 **Beacon of the Eagle LLC · Centinell Suite Defense project**
 
 [Open the private web workspace](https://centinellia-field-companion.centinellsuite.chatgpt.site). For a portable copy, download [index.html](index.html) with GitHub's Download raw file button and open it in a browser.
 
 ## What changed
+
+- Inventory and defensive findings now support validated JSON restore, preserving existing IDs and rejecting the wrong register, malformed records and oversized backups. Case backups remain separate.
+- Portable preview generation preserves the online PWA entry. Android build 4 identifies this patch.
+
 
 - Pale sky-blue and white interface, navy text, larger labels, and simpler mobile navigation.
 - Evidence metadata register per case: source, custodian, acquisition time in UTC, SHA-256, and notes. Original files are not copied into the workspace.
@@ -22,7 +26,7 @@ The local storage key is preserved. Backup format 2 adds evidence and chronology
 
 ## Android
 
-Package: `com.beaconoftheeagle.centinellia`. Version 1.2.0 (version code 3). Android 8.0+; target/compile API 36.
+Package: `com.beaconoftheeagle.centinellia`. Version 1.2.1 (version code 4). Android 8.0+; target/compile API 36.
 
 Run `./gradlew lintDebug assembleDebug bundleRelease` or use the [Android build workflow](https://github.com/Centinell2025/CENTINELLia/actions). The workflow's release AAB is unsigned until signing is configured; owner-delivered signed packages and the upload key are handled separately. Never commit signing keys or credentials.
 

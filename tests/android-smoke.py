@@ -35,10 +35,16 @@ try:
     apk=next(Path('android-build').rglob('app-debug.apk'))
     adb('install','-r',str(apk))
     adb('shell','am','start','-W','-n',PACKAGE+'/.MainActivity')
-    find('Investigation workspace');screenshot('android-overview.png')
+    find('CENTINELL AI 1');screenshot('android-welcome.png')
+    tap('Enter Security Operations Center')
+    find('Security operations center');screenshot('android-overview.png')
     tap('Tools');tap('SHA-256 hashing')
     fixture=OUT/'centinellia-fixture.txt';fixture.write_bytes(b'abc')
     adb('push',str(fixture),'/sdcard/Download/centinellia-fixture.txt')
+    # The expanded tool navigation can leave the file button below the fold.
+    # Scroll the page from the non-editable description before tapping it.
+    adb('shell','input','swipe','500','1700','500','1100','350')
+    time.sleep(1)
     tap('Choose a file')
     # The system document picker is outside the app. Choose only our test fixture.
     try: tap('Show roots')
@@ -58,7 +64,9 @@ try:
     screenshot('android-file-hash.png')
     adb('shell','am','force-stop',PACKAGE)
     adb('shell','am','start','-W','-n',PACKAGE+'/.MainActivity')
-    find('Investigation workspace')
+    find('CENTINELL AI 1')
+    tap('Enter Security Operations Center')
+    find('Security operations center')
     log=adb('logcat','-d','-s','AndroidRuntime:E').decode()
     assert 'FATAL EXCEPTION' not in log,log
     print('ANDROID PASS: install, offline packaged UI, native file picker, SHA-256 known vector, restart.')

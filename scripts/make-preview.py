@@ -20,5 +20,4 @@ for name, script in zip(['core.js', 'app.js'], scripts):
 output = root/'preview'/'CENTINELLia_Preview.html'
 output.parent.mkdir(parents=True, exist_ok=True)
 output.write_text(html)
-(root/'index.html').write_text(html)
 print(output)

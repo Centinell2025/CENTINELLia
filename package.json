@@ -1,7 +1,7 @@
 {
   "name": "centinellia",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "description": "CENTINELL AI 1 enterprise pilot local defensive workspace",
-  "scripts": { "test": "node --test tests/core.test.cjs tests/ai-worker.test.mjs", "preview": "python3 -m http.server 4173 --directory app/src/main/assets", "test:ui": "node tests/ui.test.cjs" }
+  "scripts": { "test": "node --test tests/core.test.cjs tests/register-backup.test.cjs tests/ai-worker.test.mjs", "preview": "python3 -m http.server 4173 --directory app/src/main/assets", "test:ui": "node tests/ui.test.cjs" }
 }

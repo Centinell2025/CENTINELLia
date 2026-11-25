@@ -118,7 +118,39 @@
     return rows.map(row=>row.map(cell).join(',')).join('\r\n');
   }
   function stats(cases) {return {total:cases.length,active:cases.filter(c=>c.status!=='Closed').length,evidence:cases.reduce((n,c)=>n+(c.evidence?.length||0),0),events:cases.reduce((n,c)=>n+(c.timeline?.length||0),0),notes:cases.reduce((n,c)=>n+c.notes.length,0),priorities:priorities.map(priority=>({label:priority,count:cases.filter(c=>c.priority===priority&&c.status!=='Closed').length})),statuses:statuses.map(status=>({label:status,count:cases.filter(c=>c.status===status).length}))};}
-  const api = { priorities, statuses, categories, guides, evidenceTypes, verifications, utc, id, esc, createCase, createEvidence, createEvent, extractIndicators, validateBackup, backup, report, csv, stats };
+  const registerSchemas = {
+    assets: {limit:2000, fields:['id','name','type','criticality','platform','location','owner','status','notes','updated']},
+    reviews: {limit:1000, fields:['id','title','scope','approval','expires','asset','reference','evidence','remediation','severity','status','updated']}
+  };
+  function validRegisterRecord(record, kind) {
+    const schema=registerSchemas[kind];
+    if(!schema || !record || !schema.fields.every(key=>typeof record[key]==='string'&&record[key].length<=2000) || !/^[a-zA-Z0-9-]{1,80}$/.test(record.id) || !timestamp(record.updated)) return false;
+    if(kind==='assets') return !!record.name.trim() && ['Android phone','iPhone / iPad','Workstation','Physical server','Virtual server','Cloud instance','Server cluster','Network appliance','Storage system'].includes(record.type) && ['Low','Medium','High','Critical'].includes(record.criticality) && ['Unverified','Operational','Degraded','Offline'].includes(record.status);
+    const expiry=new Date(record.expires+'T00:00:00Z');
+    return !!record.title.trim() && !!record.scope.trim() && !!record.approval.trim() && /^\d{4}-\d{2}-\d{2}$/.test(record.expires) && Number.isFinite(expiry.getTime()) && expiry.toISOString().slice(0,10)===record.expires && ['Low','Medium','High','Critical'].includes(record.severity) && ['Unverified','Confirmed','Remediation planned','Retest pending','Resolved'].includes(record.status);
+  }
+  function registerRecords(records, kind) {
+    const schema=registerSchemas[kind], ids=new Set();
+    if(!schema || !Array.isArray(records) || records.length>schema.limit) throw Error('Unsupported register or record limit exceeded.');
+    return records.map(record=>{
+      if(!validRegisterRecord(record,kind) || ids.has(record.id)) throw Error('The backup contains invalid or duplicate register records.');
+      ids.add(record.id);
+      return Object.fromEntries(schema.fields.map(key=>[key,record[key]]));
+    });
+  }
+  function readRegisterBackup(raw, kind) {
+    if(typeof raw!=='string' || new TextEncoder().encode(raw).length>2*1024*1024) throw Error('Backup exceeds 2 MB.');
+    let data;try{data=JSON.parse(raw);}catch(_){throw Error('This is not a valid JSON backup.');}
+    if(!data || data.format!==1 || !registerSchemas[kind] || !Array.isArray(data[kind])) throw Error('Choose the matching inventory or findings JSON export.');
+    return registerRecords(data[kind],kind);
+  }
+  function mergeRegisterRecords(existing, incoming, kind) {
+    const current=registerRecords(existing,kind), additions=registerRecords(incoming,kind), known=new Set(current.map(record=>record.id));
+    const fresh=additions.filter(record=>!known.has(record.id)), records=registerRecords([...current,...fresh],kind);
+    if(new TextEncoder().encode(JSON.stringify(records)).length>2*1024*1024) throw Error('Combined register exceeds 2 MB. Export or remove older records first.');
+    return {records,added:fresh.length,skipped:additions.length-fresh.length};
+  }
+  const api = { priorities, statuses, categories, guides, evidenceTypes, verifications, utc, id, esc, createCase, createEvidence, createEvent, extractIndicators, validateBackup, backup, report, csv, stats, validRegisterRecord, readRegisterBackup, mergeRegisterRecords };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Centinell = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

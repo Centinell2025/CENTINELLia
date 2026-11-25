@@ -6,7 +6,7 @@ A professional defensive investigation workspace for corporate security teams, a
 
 ## Distribution
 - Web/PWA: GitHub Pages demonstration, responsive desktop and mobile. On supported Android/desktop browsers use Install or Add to Home Screen; on iOS use Safari Share > Add to Home Screen where supported. Installation and offline behavior require device testing. Do not submit real corporate evidence in the public demo.
-- Android: package remains com.beaconoftheeagle.centinellia, version 1.2.0 (3); build, sign with existing upload key and test before Play submission.
+- Android: package remains com.beaconoftheeagle.centinellia, version 1.2.1 (4); build, sign with existing upload key and test before Play submission.
 - Apple: native iOS/iPadOS client and App Store review not completed. PWA is not a native app.
 - Windows/macOS/Linux: browser client; native desktop installers not yet built.
 - Servers: enterprise SQL foundation exists; authenticated API, collectors, queues and database deployment are pending.
